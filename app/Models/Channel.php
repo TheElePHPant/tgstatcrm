@@ -13,7 +13,14 @@ class Channel extends Model
 {
     use TimeZone;
 
-    protected $appends = ['today_subscribers', 'total_subscribers', 'profit', 'consumption'];
+    protected $appends = [
+        'today_subscribers',
+        'total_subscribers',
+        'profit',
+        'consumption',
+        'total_profit',
+        'total_consumption',
+    ];
 
     public function stats(): HasMany
     {
@@ -55,6 +62,12 @@ class Channel extends Model
         ]);
     }
 
+    public function transactions() {
+        return $this->hasMany(Transaction::class);
+    }
+
+
+
     public function profit() : Attribute
     {
         return Attribute::make(
@@ -68,4 +81,18 @@ class Channel extends Model
             get: fn()=>$this->daily_transaction->consumption,
         );
     }
+
+    public function totalConsumption() : Attribute
+    {
+        return Attribute::make(
+            get: fn()=> $this->transactions->sum('consumption')
+        );
+    }
+    public function totalProfit() : Attribute
+    {
+        return Attribute::make(
+            get: fn()=>$this->transactions->sum('profit')
+        );
+    }
+
 }

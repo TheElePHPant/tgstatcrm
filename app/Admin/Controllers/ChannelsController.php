@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Models\Transaction;
+use App\Services\TgStatService;
 use Carbon\Carbon;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
@@ -25,6 +26,8 @@ class ChannelsController extends AdminController
      *
      * @return Grid
      */
+
+
     protected function grid()
     {
         $grid = new Grid(new Channel());
@@ -39,7 +42,13 @@ class ChannelsController extends AdminController
         $grid->column('total_subscribers', 'Всего подписчиков');
         $grid->column('consumption', 'Расход (день)')->editable();
         $grid->column('profit', 'Доход (день)')->editable();
+        $grid->column('total_consumption', 'Расход(всего)');
+        $grid->column('total_profit', 'Доход(всего)');
         $grid->column('daily_subscribers.created_at', 'Дата обновления')->datetime('d.m.Y H:i:s');
+        $grid->actions(function($actions){
+            $actions->disableDelete()->disableView();
+            $actions->append('<a href="'.route('admin.channels.update-info', ['id'=>$this->row->id]).'" title="Получить актуальные данные"><i class="fa fa-refresh"></i></a>');
+        });
         return $grid;
     }
 
@@ -110,5 +119,11 @@ class ChannelsController extends AdminController
             }
         }
         return $update;
+    }
+    public function updateInfo($id, TgStatService $statService) {
+        $channel = Channel::find($id);
+        $statService->parseChannel($channel->channel_url);
+        admin_success('Информация обновлена');
+        return redirect()->back();
     }
 }
