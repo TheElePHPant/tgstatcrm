@@ -43,14 +43,14 @@ class Channel extends Model
     public function todaySubscribers(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->daily_subscribers->day_subscribers,
+            get: fn() => $this?->daily_subscribers?->day_subscribers??0,
         );
     }
 
     public function totalSubscribers(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->all_time_subscribers->total_subscribers,
+            get: fn() => $this?->all_time_subscribers?->total_subscribers??0,
         );
     }
 
