@@ -40,7 +40,12 @@ class ChannelsController extends AdminController
         $grid->column('tgstat_url', 'TGStat');
         $grid->column('today_subscribers', 'Подписчики за день');
         $grid->column('total_subscribers', 'Всего подписчиков');
+        if(auth('admin')->user()->roles->pluck('slug')->contains('administrator')) {
+
         $grid->column('consumption', 'Расход (день)')->editable();
+        } else {
+            $grid->column('consumption', 'Расход (день)');
+        }
         $grid->column('profit', 'Доход (день)')->editable();
         $grid->column('total_consumption', 'Расход(всего)');
         $grid->column('total_profit', 'Доход(всего)');
@@ -111,6 +116,7 @@ class ChannelsController extends AdminController
                     $transaction->profit = $data['profit'];
                 }
                 if(isset($data['consumption'])) {
+                    abort_if(!auth('admin')->user()->roles->pluck('slug')->contains('administrator'), 403);
                     $transaction->consumption = $data['consumption'];
                 }
                 $transaction->save();
