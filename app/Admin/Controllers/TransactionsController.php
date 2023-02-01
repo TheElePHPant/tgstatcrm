@@ -18,7 +18,7 @@ class TransactionsController extends AdminController
      *
      * @var string
      */
-    protected $title = 'Продажи';
+    protected $title = 'Бухгалтерия';
 
     /**
      * Make a grid builder.
@@ -28,13 +28,13 @@ class TransactionsController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Transaction());
-        $grid->model()->with(['administrator', 'channel'])->orderBy('id', 'desc');
+        $grid->model()->with(['administrator', 'channel', 'client'])->orderBy('id', 'desc');
        // $grid->column('id', __('Id'));
         $grid->column('channel.title', 'Канал');
         $grid->column('administrator.username', 'Менеджер');
+        $grid->column('client.name', 'Клиент');
         $grid->column('type_title', 'Операция');
         $grid->column('amount','Сумма');
-        $grid->disableCreateButton();
 //        $grid->column('administrator_id', __('Administrator id'));
 //        $grid->column('client_id', __('Client id'));
 //        $grid->column('channel_id', __('Channel id'));
@@ -42,6 +42,7 @@ class TransactionsController extends AdminController
 //        $grid->column('amount', __('Amount'));
 //        $grid->column('comment', __('Comment'));
         $grid->column('created_at', __('Дата'));
+        $grid->disableCreateButton();
 //        $grid->column('updated_at', __('Updated at'));
 //        $grid->column('deleted_at', __('Deleted at'));
 
@@ -81,12 +82,15 @@ class TransactionsController extends AdminController
     {
         $form = new Form(new Transaction());
 
+        \Admin::script($this->script());
+
         //$form->number('administrator_id', __('Administrator id'));
         $form->row(function ($form) {
             $form->hidden('administrator_id')
                 ->default(auth('admin')->id())->value(auth('admin')->id());
             $form->width(4)->select('client_id', 'Клиент')
                 ->options(Client::pluck('name', 'id'));
+            $form->width(4)->html('<a href="javascript://" class="add-client btn btn-primary"><i class="fa fa-plus"></i> Добавить клиента</a>');
         });
         $form->row(function ($form) {
             $form->width(4)->select('channel_id', 'Выберите канал')
@@ -109,5 +113,39 @@ class TransactionsController extends AdminController
         });
 
         return $form;
+    }
+
+    public function script() {
+        $url = route('admin.clients.quick-create');
+        return <<<SCRIPT
+$(function(){
+ $('.add-client').unbind('click').click(function(){
+    var name = prompt('Введите имя нового клиента');
+    console.log(name);
+    if(null!==name) {
+      $.ajax({
+        type:'post',
+        url:'$url',
+        data:{name:name, _token:$('meta[name="csrf-token"]').attr('content')},
+        success: function(res){
+            console.log(res);
+            $('.client_id').select2("destroy");
+            $('.client_id').html('');
+            for(id in res.clients) {
+                $('.client_id').append('<option value="'+id+'">'+res.clients[id]+'</option>');
+            }
+            $('.client_id').val(res.id);
+            window.setTimeout(function(){
+$('.client_id').select2({allowClear:true, placeholder:'Клиент'});
+            }, 1000);
+
+            return false;
+        }
+      });
+    }
+ })
+});
+SCRIPT;
+
     }
 }

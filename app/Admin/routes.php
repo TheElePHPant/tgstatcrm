@@ -18,5 +18,6 @@ Route::group([
     $router->resource('transactions', TransactionsController::class);
     $router->group(['prefix' => 'clients', 'as'=>'clients.'], function($router){
         $router->get('search', [\App\Admin\Controllers\ClientsController::class, 'search'])->name('search');
+        $router->post('quick-create', [\App\Admin\Controllers\ClientsController::class, 'quickCreate'])->name('quick-create');
     });
 });

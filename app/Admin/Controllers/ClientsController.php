@@ -65,4 +65,12 @@ class ClientsController extends AdminController
 
         return $form;
     }
+
+    public function quickCreate() {
+        $data = request()->all();
+        $client = Client::create([
+            'name'=>$data['name'],
+        ]);
+        return response(['id'=>$client->id, 'name'=>$client->name, 'clients'=>Client::all()->pluck('name', 'id')]);
+    }
 }
