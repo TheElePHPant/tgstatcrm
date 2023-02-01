@@ -45,7 +45,7 @@ class ChannelsController extends AdminController
 
         $grid->column('daily_consumption', 'Расход (день)');
         $grid->column('daily_profit', 'Доход (день)');
-        $grid->column('consumptions_sum_amount', 'Расход(всего)');
+        $grid->column('consumptions_sum_amount', 'Расход(всего)')->display(fn()=>$this->consumptions_sum_amount??0);
         $grid->column('profit_sum_amount', 'Доход(всего)');
         $grid->column('daily_subscribers.created_at', 'Дата обновления')->datetime('d.m.Y H:i:s');
         $grid->actions(function ($actions) {
