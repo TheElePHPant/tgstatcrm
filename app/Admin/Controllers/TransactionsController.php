@@ -31,10 +31,10 @@ class TransactionsController extends AdminController
         $grid = new Grid(new Transaction());
         $grid->model()->with(['administrator', 'channel', 'client'])->orderBy('id', 'desc');
        // $grid->column('id', __('Id'));
-        $grid->column('channel.title', 'Канал');
         $grid->column('administrator.username', 'Менеджер');
+        $grid->column('channel.title', 'Канал');
         $grid->column('client.name', 'Клиент');
-        $grid->column('type_title', 'Операция');
+        $grid->column('type_title', 'Операция')->display(fn()=>$this->type_title);
         $grid->column('amount','Сумма');
         $grid->column('comment', 'Примечание');
 //        $grid->column('administrator_id', __('Administrator id'));

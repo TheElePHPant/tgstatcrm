@@ -40,8 +40,8 @@ class Transaction extends Model
 
         return Attribute::make(
             get: fn()=>match($this->type) {
-                TransactionType::PROFIT->value => 'Доход',
-                TransactionType::CONSUMPTION=>'Расход',
+                TransactionType::PROFIT->value => '<span style="color:green">Доход</span>',
+                TransactionType::CONSUMPTION->value=>'<span style="color: red">Расход</span>',
                 default=>'Неизвестная операция',
             });
     }
