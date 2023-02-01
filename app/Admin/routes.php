@@ -14,4 +14,9 @@ Route::group([
     $router->get('/', 'HomeController@index')->name('home');
     $router->resource('channels', ChannelsController::class);
     $router->get('update-channel/{id}', [\App\Admin\Controllers\ChannelsController::class, 'updateInfo'])->name('channels.update-info');
+    $router->resource('clients', ClientsController::class);
+    $router->resource('transactions', TransactionsController::class);
+    $router->group(['prefix' => 'clients', 'as'=>'clients.'], function($router){
+        $router->get('search', [\App\Admin\Controllers\ClientsController::class, 'search'])->name('search');
+    });
 });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use App\Enums\TransactionType;
 use App\Traits\TimeZone;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ class Channel extends Model
     protected $appends = [
         'today_subscribers',
         'total_subscribers',
-        'profit',
+        'daily_profit',
         'consumption',
         'total_profit',
         'total_consumption',
@@ -26,6 +27,24 @@ class Channel extends Model
     {
         return $this->hasMany(Stat::class);
     }
+    public function transactions() {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function consumptions() {
+        return $this->transactions()->where('type', TransactionType::CONSUMPTION->value);
+    }
+    public function profit() {
+        return $this->transactions()->where('type', TransactionType::PROFIT->value);
+    }
+//    public function daily_profit() {
+//        $date = date('Y-m-d');
+//        return $this->profit()->whereRaw('DATE(created_at) = ?', $date);
+//    }
+//    public function daily_consumption() {
+//        $date = date('Y-m-d');
+//        return $this->consumptions()->whereRaw('DATE(created_at) = ?', $date);
+//    }
 
     public function daily_subscribers(): HasOne
     {
@@ -54,44 +73,36 @@ class Channel extends Model
         );
     }
 
-    public function daily_transaction(): HasOne
+
+
+
+
+    public function dailyProfit() : Attribute
     {
-        return $this->hasOne(Transaction::class)->whereRaw('date = DATE(NOW())')->withDefault([
-            'profit' => 0.00,
-            'consumption' => 0.00,
-        ]);
-    }
-
-    public function transactions() {
-        return $this->hasMany(Transaction::class);
-    }
-
-
-
-    public function profit() : Attribute
-    {
+        $date = date('Y-m-d');
         return Attribute::make(
-            get: fn()=>$this->daily_transaction->profit,
+            get: fn()=>$this->profit()->whereRaw('DATE(created_at) = ?', $date)
+                ->sum('amount'),
         );
     }
 
     public function consumption() : Attribute
     {
         return Attribute::make(
-            get: fn()=>$this->daily_transaction->consumption,
+            get: fn()=>0
         );
     }
 
     public function totalConsumption() : Attribute
     {
         return Attribute::make(
-            get: fn()=> $this->transactions->sum('consumption')
+            get: fn()=> 0
         );
     }
     public function totalProfit() : Attribute
     {
         return Attribute::make(
-            get: fn()=>$this->transactions->sum('profit')
+            get: fn()=> $this->profit()->sum('amount'),
         );
     }
 

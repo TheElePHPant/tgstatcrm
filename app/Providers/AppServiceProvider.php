@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Channel;
+use App\Models\Client;
 use App\Models\Transaction;
 use App\Observers\ChannelObserver;
+use App\Observers\ClientObserver;
 use App\Observers\TransactionObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,5 +34,6 @@ class AppServiceProvider extends ServiceProvider
     {
 
         Channel::observe(ChannelObserver::class);
+        Client::observe(ClientObserver::class);
     }
 }
