@@ -35,6 +35,7 @@ class TransactionsController extends AdminController
         $grid->column('client.name', 'Клиент');
         $grid->column('type_title', 'Операция');
         $grid->column('amount','Сумма');
+        $grid->column('comment', 'Примечание');
 //        $grid->column('administrator_id', __('Administrator id'));
 //        $grid->column('client_id', __('Client id'));
 //        $grid->column('channel_id', __('Channel id'));
