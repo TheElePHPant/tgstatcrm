@@ -18,9 +18,7 @@ class Channel extends Model
         'today_subscribers',
         'total_subscribers',
         'daily_profit',
-        'consumption',
-        'total_profit',
-        'total_consumption',
+        'daily_consumption',
     ];
 
     public function stats(): HasMany
@@ -37,14 +35,14 @@ class Channel extends Model
     public function profit() {
         return $this->transactions()->where('type', TransactionType::PROFIT->value);
     }
-//    public function daily_profit() {
-//        $date = date('Y-m-d');
-//        return $this->profit()->whereRaw('DATE(created_at) = ?', $date);
-//    }
-//    public function daily_consumption() {
-//        $date = date('Y-m-d');
-//        return $this->consumptions()->whereRaw('DATE(created_at) = ?', $date);
-//    }
+    public function day_profit() {
+        $date = date('Y-m-d');
+        return $this->profit()->whereRaw('DATE(created_at) = ?', $date);
+    }
+    public function day_consumption() {
+        $date = date('Y-m-d');
+        return $this->consumptions()->whereRaw('DATE(created_at) = ?', $date);
+    }
 
     public function daily_subscribers(): HasOne
     {
@@ -81,15 +79,14 @@ class Channel extends Model
     {
         $date = date('Y-m-d');
         return Attribute::make(
-            get: fn()=>$this->profit()->whereRaw('DATE(created_at) = ?', $date)
-                ->sum('amount'),
+            get: fn()=>$this->day_profit->sum('amount'),
         );
     }
 
-    public function consumption() : Attribute
+    public function dailyConsumption() : Attribute
     {
         return Attribute::make(
-            get: fn()=>0
+            get: fn()=>$this->day_consumption->sum('amount')
         );
     }
 

@@ -5,6 +5,7 @@ namespace App\Admin\Controllers;
 use App\Models\Transaction;
 use App\Services\TgStatService;
 use Carbon\Carbon;
+use danog\MadelineProto\auth;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -31,7 +32,8 @@ class ChannelsController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Channel());
-        $grid->model()->with(['daily_subscribers', 'all_time_subscribers']);
+        $grid->model()->with(['daily_subscribers', 'all_time_subscribers'])->withSum('consumptions', 'amount')
+        ->withSum('profit', 'amount');
 
 
         $grid->column('id', __('Id'));
@@ -41,16 +43,21 @@ class ChannelsController extends AdminController
         $grid->column('today_subscribers', 'Подписчики за день');
         $grid->column('total_subscribers', 'Всего подписчиков');
 
-        $grid->column('consumption', 'Расход (день)');
+        $grid->column('daily_consumption', 'Расход (день)');
         $grid->column('daily_profit', 'Доход (день)');
-        $grid->column('total_consumption', 'Расход(всего)');
-        $grid->column('total_profit', 'Доход(всего)');
+        $grid->column('consumptions_sum_amount', 'Расход(всего)');
+        $grid->column('profit_sum_amount', 'Доход(всего)');
         $grid->column('daily_subscribers.created_at', 'Дата обновления')->datetime('d.m.Y H:i:s');
         $grid->actions(function ($actions) {
             $actions->disableDelete()->disableView();
-            $actions->prepend('<a href="' . route('admin.channels.update-info', ['id' => $this->row->id]) . '" title="Получить актуальные данные"><i class="fa fa-refresh"></i></a>');
-            $actions->append('<a href="'.route('admin.transactions.create', ['channel'=>$this->row->id]).'" class="btn btn-xs btn-primary">+ Продажа</a>');
+            $actions->prepend('<a href="' . route('admin.channels.update-info', ['id' => $this->row->id]) . '" title="Получить актуальные данные"><i class="fa fa-refresh"></i></a>&nbsp;&nbsp;');
+            $actions->append('<a href="' . route('admin.transactions.create', ['channel' => $this->row->id]) . '" class="btn btn-xs btn-primary">+ Продажа</a>&nbsp;');
+            if (auth('admin')->user()->roles->pluck('slug')->contains('administrator')) {
+
+                $actions->append('<a href="' . route('admin.transactions.create-consumption', ['channel' => $this->row->id]) . '" class="btn btn-xs btn-danger">- Расход</a>&nbsp;');
+            }
         });
+
         $grid->setView('grid.crm.channels');
         return $grid;
     }

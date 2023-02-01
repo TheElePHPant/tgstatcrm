@@ -76,3 +76,8 @@
     </div>
     <!-- /.box-body -->
 </div>
+<style>
+    .column-__actions__ {
+        width: 195px;
+    }
+</style>

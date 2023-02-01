@@ -8,6 +8,7 @@ use App\Models\Client;
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use \App\Models\Transaction;
 
@@ -114,6 +115,42 @@ class TransactionsController extends AdminController
         });
 
         return $form;
+    }
+
+    public function createConsumption(Content $content) {
+
+        abort_if(!auth('admin')->user()->roles->pluck('slug')->contains('administrator'), 403);
+
+        $form = new Form(new Transaction());
+        $form->setAction(route('admin.transactions.store-consumption', ['channel'=>request('channel')]));
+        $form->row(function ($form) {
+            $form->width(4)->select('channel_id', 'Выберите канал')
+
+                ->options(Channel::pluck('title', 'id')->toArray())->default(request('channel'));
+        });
+        $form->row(function ($form) {
+            $form->hidden('type')->value(TransactionType::PROFIT->value)->default(TransactionType::PROFIT->value);
+            $form->width(8)->decimal('amount', __('Сумма'));
+
+        });
+        $form->row(function($form){
+            $form->width(4)->textarea('comment', __('Комментарий'));
+        });
+        $form->setView('form.crm.consumption');
+
+
+        return $content->title('Создать расход')->body($form);
+
+    }
+    public function storeConsumption() {
+        abort_if(!auth('admin')->user()->roles->pluck('slug')->contains('administrator'), 409);
+        $data = request()->all();
+        $data['type'] = TransactionType::CONSUMPTION->value;
+        $data['administrator_id'] = auth('admin')->id();
+        admin_success('Расход добавлен');
+        Transaction::create($data);
+        header("Location: ".route('admin.channels.index'));
+        die;
     }
 
     public function script() {
