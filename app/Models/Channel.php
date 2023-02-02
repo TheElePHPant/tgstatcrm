@@ -7,6 +7,7 @@ use App\Enums\TransactionType;
 use App\Traits\TimeZone;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -50,6 +51,11 @@ class Channel extends Model
 
         return $this->hasOne(Stat::class)->orderBy('created_at', 'desc')
             ->whereRaw('DATE(stats.created_at) = DATE(NOW())');
+    }
+
+    public function administrators() : BelongsToMany
+    {
+        return $this->belongsToMany(Administrator::class);
     }
 
     public function all_time_subscribers(): HasOne
@@ -101,6 +107,11 @@ class Channel extends Model
         return Attribute::make(
             get: fn()=> $this->profit()->sum('amount'),
         );
+    }
+
+    public function scopeByUser($q) {
+        return $q->when(auth('admin')->user()->roles->pluck('slug')->contains('administrator'), fn($q)=>$q)
+            ->when(auth('admin')->user()->roles->pluck('slug')->contains('manager'), fn($q)=>$q->whereHas('administrators', fn($q)=>$q->where('administrator_id', auth('admin')->id())));
     }
 
 }

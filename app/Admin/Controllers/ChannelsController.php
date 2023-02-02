@@ -32,9 +32,14 @@ class ChannelsController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new Channel());
-        $grid->model()->with(['daily_subscribers', 'all_time_subscribers'])->withSum('consumptions', 'amount')
+        $grid->model()->byUser()->with(['daily_subscribers', 'all_time_subscribers'])
+            ->withSum('consumptions', 'amount')
         ->withSum('profit', 'amount');
 
+
+        if(!auth()->user()->roles->pluck('slug')->contains('administrator')) {
+            $grid->disableCreateButton();
+        }
 
         $grid->column('id', __('Id'));
         $grid->column('title', __('Название'));

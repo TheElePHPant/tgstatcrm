@@ -105,7 +105,7 @@ class TransactionsController extends AdminController
         $form->row(function ($form) {
             $form->width(4)->select('channel_id', 'Выберите канал')
 
-                ->options(Channel::pluck('title', 'id')->toArray())->default(request('channel'));
+                ->options(Channel::byUser()->pluck('title', 'id')->toArray())->default(request('channel'));
             //$form->text('type', __('Type'));
 
         });

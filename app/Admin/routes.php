@@ -24,4 +24,5 @@ Route::group([
         $router->get('search', [\App\Admin\Controllers\ClientsController::class, 'search'])->name('search');
         $router->post('quick-create', [\App\Admin\Controllers\ClientsController::class, 'quickCreate'])->name('quick-create');
     });
+    $router->resource('auth/users', UserController::class)->names('admin.auth.users');
 });
