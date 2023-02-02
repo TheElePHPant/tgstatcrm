@@ -47,7 +47,15 @@ class TransactionsController extends AdminController
         $grid->disableCreateButton();
 //        $grid->column('updated_at', __('Updated at'));
 //        $grid->column('deleted_at', __('Deleted at'));
-
+        $grid->disableFilter(false);
+        $grid->filter(function($filter){
+            $filter->disableIdFilter();
+            $filter->expand();
+            $filter->equal('type', 'Тип операции')->select([
+                TransactionType::PROFIT->value=>'Доход',
+                TransactionType::CONSUMPTION->value=>'Расход'
+            ]);
+        });
         return $grid;
     }
 
