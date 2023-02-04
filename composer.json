@@ -13,7 +13,8 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "spatie/laravel-activitylog": "^4.7",
-        "symfony/dom-crawler": "^5.4"
+        "symfony/dom-crawler": "^5.4",
+        "xiaohuilam/laravel-admin-nocaptcha": "^0.1.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.7",
