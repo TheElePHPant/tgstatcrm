@@ -2,6 +2,7 @@
 
 namespace App\Admin\Controllers;
 
+use App\Models\Topic;
 use App\Models\Transaction;
 use App\Services\TgStatService;
 use Carbon\Carbon;
@@ -31,8 +32,17 @@ class ChannelsController extends AdminController
 
     protected function grid()
     {
+
+        $topics = Topic::withCount(['channels'])->get();
+        $withoutTopicsCount = Channel::whereNull('topic_id')->count();
+        $channelsCount = Channel::count();
+        $currentTopic = \request('topic');
         $grid = new Grid(new Channel());
-        $grid->model()->byUser()->with(['daily_subscribers', 'all_time_subscribers'])
+        $grid->model()
+            ->when(null==$currentTopic, fn($q)=>$q)
+            ->when(-1==$currentTopic, fn($q)=>$q->whereNull('topic_id'))
+            ->when(null!==$currentTopic&&$currentTopic>0, fn($q)=>$q->where('topic_id', $currentTopic))
+            ->byUser()->with(['daily_subscribers', 'all_time_subscribers'])
             ->withSum('consumptions', 'amount')
         ->withSum('profit', 'amount');
 
@@ -62,8 +72,7 @@ class ChannelsController extends AdminController
                 $actions->append('<a href="' . route('admin.transactions.create-consumption', ['channel' => $this->row->id]) . '" class="btn btn-xs btn-danger">- Расход</a>&nbsp;');
             }
         });
-
-        $grid->setView('grid.crm.channels');
+        $grid->setView('grid.crm.channels', ['topics'=>$topics, 'withoutTopicsCount'=>$withoutTopicsCount, 'channelsCount'=>$channelsCount, 'currentTopic'=>$currentTopic]);
         return $grid;
     }
 
@@ -97,6 +106,7 @@ class ChannelsController extends AdminController
         $form = new Form(new Channel());
 
         $form->text('title', __('Название канала'));
+        $form->select('topic_id', 'Тематика канала')->options(Topic::query()->pluck('title', 'id'));
         if ($form->isEditing()) {
             $form->text('channel_url', __('Ссылка'))
                 ->help('https://t.me/+aAaAaA')->readonly();
