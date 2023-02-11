@@ -4,8 +4,73 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28631cbc71cad6f437a02969524770f3",
+    "content-hash": "6468baaddcbb4ccb8b4eadd4e0aa72f7",
     "packages": [
+        {
+            "name": "233sec/laravel-recaptchav3",
+            "version": "0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xiaohuilam/laravel-recaptchav3.git",
+                "reference": "581f41285b73129ebfaa2e5711ecb5164e16bf13"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xiaohuilam/laravel-recaptchav3/zipball/581f41285b73129ebfaa2e5711ecb5164e16bf13",
+                "reference": "581f41285b73129ebfaa2e5711ecb5164e16bf13",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": ">=6.2",
+                "illuminate/container": ">=5.5.0",
+                "illuminate/http": ">=5.5.0",
+                "illuminate/support": ">=5.5.0",
+                "php": ">=7.0.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.2",
+                "orchestra/testbench": "~3.7.0",
+                "phpunit/phpunit": "6.2|^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Lunaweb\\RecaptchaV3\\Providers\\RecaptchaV3ServiceProvider"
+                    ],
+                    "aliases": {
+                        "RecaptchaV3": "Lunaweb\\RecaptchaV3\\Facades\\RecaptchaV3"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lunaweb\\RecaptchaV3\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Josias Montag",
+                    "email": "josias@montag.info"
+                }
+            ],
+            "description": "Recaptcha V3 for Laravel package",
+            "homepage": "https://github.com/233sec/laravel-recaptchav3",
+            "keywords": [
+                "captcha",
+                "laravel",
+                "php",
+                "recaptcha"
+            ],
+            "support": {
+                "source": "https://github.com/xiaohuilam/laravel-recaptchav3/tree/0.8"
+            },
+            "time": "2019-04-18T03:34:20+00:00"
+        },
         {
             "name": "amphp/amp",
             "version": "v2.6.2",
@@ -8928,6 +8993,62 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "xiaohuilam/laravel-admin-nocaptcha",
+            "version": "v0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xiaohuilam/laravel-admin-nocaptcha.git",
+                "reference": "05568004da3602ef62119a31d0b672c2cd74f037"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xiaohuilam/laravel-admin-nocaptcha/zipball/05568004da3602ef62119a31d0b672c2cd74f037",
+                "reference": "05568004da3602ef62119a31d0b672c2cd74f037",
+                "shasum": ""
+            },
+            "require": {
+                "233sec/laravel-recaptchav3": ">=0.7",
+                "encore/laravel-admin": ">=1.6"
+            },
+            "require-dev": {
+                "fzaninotto/faker": "~1.4",
+                "laravel/browser-kit-testing": "<=v4.2.1",
+                "laravel/laravel": ">=5.5",
+                "mockery/mockery": "^1.2",
+                "phpunit/phpunit": "<8.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LaravelAdminExt\\Nocaptcha\\NocaptchaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaravelAdminExt\\Nocaptcha\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Xiaohui Lam",
+                    "email": "xiaohui.lam@aliyun.com"
+                }
+            ],
+            "description": "nocaptcha implements for laravel-admin when login",
+            "support": {
+                "issues": "https://github.com/xiaohuilam/laravel-admin-nocaptcha/issues",
+                "source": "https://github.com/xiaohuilam/laravel-admin-nocaptcha/tree/master"
+            },
+            "time": "2019-06-16T16:32:53+00:00"
         }
     ],
     "packages-dev": [
