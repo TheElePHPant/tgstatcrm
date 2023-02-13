@@ -27,11 +27,11 @@ class AuthController extends BaseAuthController
             ->default(function ($form) {
                 return $form->model()->password;
             });
-
+        $form->html('<br><hr><br>Дфухфакторная авторизация');
         if (!auth('admin')->user()->enable_2fa) {
-            $form->html('Включить двухфакторную авторизацию');
             $form->html(\Socialite::driver('telegram')->getButton())->help('Авторизуйтесь через телеграм, обязательно отметив чекбокс');
-
+        } else {
+            $form->html('<a href="' . route('admin.2fa.disable') . '" class="btn btn-danger">Отключить двухфакторную авторизацию</a>');
         }
 
         $form->setAction(admin_url('auth/setting'));
@@ -78,6 +78,37 @@ class AuthController extends BaseAuthController
         }
 
         return view('admin::2fa', ['username' => $user?->telegram_username]);
+    }
+
+    public function disable2faConfirm()
+    {
+        $data = \request()->all();
+        $user = auth('admin')->user();
+        if($user->{'2fa_disable_token'}===$data['code']) {
+            $user->{'2fa_disable_token'} = null;
+            $user->token_2fa = null;
+            $user->enable_2fa = false;
+            $user->token_2fa_expires = null;
+            $user->save();
+            return redirect()->route('admin.home');
+        } else {
+            return redirect()->route('admin.2fa.disable', ['error' => 1]);
+        }
+    }
+
+    public function disable2fa()
+    {
+        if (!\request('error')) {
+            $code = \Str::random(8);
+            $user = auth('admin')->user();
+            $user->{'2fa_disable_token'} = $code;
+            $user->save();
+            $res = \Http::post('https://api.telegram.org/bot' . config('services.telegram.client_secret') . '/sendMessage', [
+                'chat_id' => $user->telegram_id_2fa,
+                'text' => 'Для отключения 2FA введите код: ' . $code,
+            ]);
+        }
+        return view('admin::2fa-disable', ['username' => auth('admin')->user()->telegram_username]);
     }
 
     public function verify2fa()

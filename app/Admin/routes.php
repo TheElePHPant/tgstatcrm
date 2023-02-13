@@ -17,11 +17,14 @@ Route::group([
         'prefix' => '2fa',
         'as' => '2fa.',
     ], function ($router) {
-        $router->get('enable', 'AuthController@enable2fa')->name('enable');
+        $router->get('enable', 'AuthController@enable2fa')->name('enable')
+            ->withoutMiddleware(['verify2fa']);
         $router->get('verify', 'AuthController@form2fa')->name('form')
             ->withoutMiddleware(['verify2fa']);
         $router->post('verify', 'AuthController@verify2fa')->name('verify')
             ->withoutMiddleware(['verify2fa']);
+        $router->get('disable', 'AuthController@disable2fa')->name('disable');
+        $router->post('disable', 'AuthController@disable2faConfirm');
     });
 
     $router->get('/', 'HomeController@index')->name('home');
