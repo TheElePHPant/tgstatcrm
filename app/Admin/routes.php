@@ -33,6 +33,7 @@ Route::group([
     $router->get('update-channel/{id}', [\App\Admin\Controllers\ChannelsController::class, 'updateInfo'])->name('channels.update-info');
     $router->resource('clients', ClientsController::class);
     $router->resource('transactions', TransactionsController::class);
+    $router->resource('campaign-stats', CampaignStatsController::class);
     $router->group(['prefix' => 'transactions', 'as' => 'transactions.'], function ($router) {
         $router->get('create-consumption/{channel}', [\App\Admin\Controllers\TransactionsController::class, 'createConsumption'])->name('create-consumption');
         $router->post('create-consumption/{channel}', [\App\Admin\Controllers\TransactionsController::class, 'storeConsumption'])->name('store-consumption');
