@@ -10,6 +10,20 @@ use \App\Models\CampaignStats;
 
 class CampaignStatsController extends AdminController
 {
+
+    protected $select1 = [
+        'active'=>'Активно',
+        'pzrd'=>'ПЗРД',
+        'check'=>'Чек',
+        'zrd'=>'ЗРД',
+    ];
+    protected $select2 = [
+        'active'=>'Активно',
+        'moderate'=>'Модерация',
+        'check'=>'Чек',
+        'billing'=>'Биллинг',
+        'ban'=>'БАН',
+    ];
     /**
      * Title for current resource.
      *
@@ -27,8 +41,8 @@ class CampaignStatsController extends AdminController
         $grid = new Grid(new CampaignStats());
 
         $grid->column('id', __('Id'));
-        $grid->column('status1', __('Статус'));
-        $grid->column('status2', __('Статус'));
+        $grid->column('status1', __('Статус'))->select($this->select1);
+        $grid->column('status2', __('Статус'))->select($this->select2);
         $grid->column('card', __('Карта'));
         $grid->column('campaign', __('РК'));
         $grid->column('result', __('Результат'));
@@ -89,19 +103,8 @@ class CampaignStatsController extends AdminController
         $form = new Form(new CampaignStats());
 
 //        $form->field('status1', __('Статус'));
-        $form->select('status1', 'Статус 1')->options([
-            'active'=>'Активно',
-            'pzrd'=>'ПЗРД',
-            'check'=>'Чек',
-            'zrd'=>'ЗРД',
-        ]);
-        $form->select('status2', 'Статус 2')->options([
-            'active'=>'Активно',
-            'moderate'=>'Модерация',
-            'check'=>'Чек',
-            'billing'=>'Биллинг',
-            'ban'=>'БАН',
-        ]);
+        $form->select('status1', 'Статус 1')->options($this->select1);
+        $form->select('status2', 'Статус 2')->options($this->select2);
 //        $form->field('status2', __('Статус'));
         $form->text('card', __('Карта'));
         $form->text('campaign', __('Кампания'));
