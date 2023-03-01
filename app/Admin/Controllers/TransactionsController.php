@@ -3,6 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Enums\TransactionType;
+use App\Models\CampaignStats;
 use App\Models\Channel;
 use App\Models\Client;
 use Encore\Admin\Controllers\AdminController;
@@ -101,6 +102,7 @@ class TransactionsController extends AdminController
             $form->width(4)->select('client_id', 'Клиент')
                 ->options(Client::pluck('name', 'id'));
             $form->width(4)->html('<a href="javascript://" class="add-client btn btn-primary"><i class="fa fa-plus"></i> Добавить клиента</a>');
+
         });
         $form->row(function ($form) {
             $form->width(4)->select('channel_id', 'Выберите канал')
@@ -108,6 +110,9 @@ class TransactionsController extends AdminController
                 ->options(Channel::byUser()->pluck('title', 'id')->toArray())->default(request('channel'));
             //$form->text('type', __('Type'));
 
+        });
+        $form->row(function($form) {
+            $form->width(4)->select('campaign_id', 'Выберите кампанию')->options(CampaignStats::query()->pluck('campaign', 'id'));
         });
         $form->row(function ($form) {
             $form->hidden('type')->value(TransactionType::PROFIT->value)->default(TransactionType::PROFIT->value);
@@ -135,6 +140,10 @@ class TransactionsController extends AdminController
             $form->width(4)->select('channel_id', 'Выберите канал')
 
                 ->options(Channel::pluck('title', 'id')->toArray())->default(request('channel'));
+        });
+
+        $form->row(function($form) {
+            $form->width(4)->select('campaign_id', 'Выберите кампанию')->options(CampaignStats::query()->pluck('campaign', 'id'));
         });
         $form->row(function ($form) {
             $form->hidden('type')->value(TransactionType::PROFIT->value)->default(TransactionType::PROFIT->value);
