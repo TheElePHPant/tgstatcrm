@@ -39,15 +39,15 @@ class ChannelsController extends AdminController
         $currentTopic = \request('topic');
         $grid = new Grid(new Channel());
         $grid->model()
-            ->when(null==$currentTopic, fn($q)=>$q)
-            ->when(-1==$currentTopic, fn($q)=>$q->whereNull('topic_id'))
-            ->when(null!==$currentTopic&&$currentTopic>0, fn($q)=>$q->where('topic_id', $currentTopic))
+            ->when(null == $currentTopic, fn($q) => $q)
+            ->when(-1 == $currentTopic, fn($q) => $q->whereNull('topic_id'))
+            ->when(null !== $currentTopic && $currentTopic > 0, fn($q) => $q->where('topic_id', $currentTopic))
             ->byUser()->with(['daily_subscribers', 'all_time_subscribers'])
             ->withSum('consumptions', 'amount')
-        ->withSum('profit', 'amount');
+            ->withSum('profit', 'amount');
 
 
-        if(!auth()->user()->roles->pluck('slug')->contains('administrator')) {
+        if (!auth()->user()->roles->pluck('slug')->contains('administrator')) {
             $grid->disableCreateButton();
         }
 
@@ -60,8 +60,16 @@ class ChannelsController extends AdminController
 
         $grid->column('daily_consumption', 'Расход (день)');
         $grid->column('daily_profit', 'Доход (день)');
-        $grid->column('consumptions_sum_amount', 'Расход(всего)')->display(fn()=>$this->consumptions_sum_amount??0);
-        $grid->column('profit_sum_amount', 'Доход(всего)')->display(fn()=>$this->profit_sum_amount??0);
+        $grid->column('consumptions_sum_amount', 'Расход(всего)')->display(fn() => $this->consumptions_sum_amount ?? 0);
+        $grid->column('profit_sum_amount', 'Доход(всего)')->display(fn() => $this->profit_sum_amount ?? 0);
+        $grid->column('roi', 'ROI')->display(function () {
+            $profit = $this->profit_sum_amount;//доход
+            $consumption = $this->consumptions_sum_amount;//вложения
+            if ($consumption > 0) {
+                return round((($profit - $consumption) / $consumption * 100), 2);
+            }
+            return 0;
+        });
         $grid->column('daily_subscribers.created_at', 'Дата обновления')->datetime('d.m.Y H:i:s');
         $grid->actions(function ($actions) {
             $actions->disableDelete()->disableView();
@@ -72,7 +80,7 @@ class ChannelsController extends AdminController
                 $actions->append('<a href="' . route('admin.transactions.create-consumption', ['channel' => $this->row->id]) . '" class="btn btn-xs btn-danger">- Расход</a>&nbsp;');
             }
         });
-        $grid->setView('grid.crm.channels', ['topics'=>$topics, 'withoutTopicsCount'=>$withoutTopicsCount, 'channelsCount'=>$channelsCount, 'currentTopic'=>$currentTopic]);
+        $grid->setView('grid.crm.channels', ['topics' => $topics, 'withoutTopicsCount' => $withoutTopicsCount, 'channelsCount' => $channelsCount, 'currentTopic' => $currentTopic]);
         return $grid;
     }
 
