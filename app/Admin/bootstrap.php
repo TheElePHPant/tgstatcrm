@@ -22,7 +22,7 @@ Encore\Admin\Form::forget(['map', 'editor']);
 \Encore\Admin\Form::init(function(\Encore\Admin\Form $form){
     $form->disableEditingCheck()->disableCreatingCheck()->disableViewCheck();
     $form->header(function($header){
-        $header->disableDelete()->disableView();
+        $header->disableView();
     });
 });
 \Encore\Admin\Grid::init(function (\Encore\Admin\Grid $grid){
